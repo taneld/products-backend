@@ -41,7 +41,7 @@ router.route('/categories').get((req, res) => {
 
 // Create
 router.route('/categories/add').post((req, res) => {
-	const name = req.body.name.trim();
+    const name = req.body.name.trim();
     Category.find({
         name: new RegExp('^' + name + '$', 'i')
     })
@@ -73,37 +73,37 @@ router.route('/categories/add').post((req, res) => {
 // Since there's 0 .. many relation, it's OK to have products without categories
 router.route('/categories/delete/:id').delete((req, res) => {
     Product.find()
-		.then(products => {
-			var saves = [];
-			products.forEach(product => {
-				const idx = product.categories.indexOf(req.params.id)
-				if (idx > -1) {
-					product.categories.splice(idx, 1);
-					saves.push(product.save());
-				}
-			});
+        .then(products => {
+            var saves = [];
+            products.forEach(product => {
+                const idx = product.categories.indexOf(req.params.id)
+                if (idx > -1) {
+                    product.categories.splice(idx, 1);
+                    saves.push(product.save());
+                }
+            });
 
-			return Promise.all(saves);
-		})
-		.then(() => {
-			return Category.findOneAndDelete({_id: req.params.id});
-		})
-		.then(record => {
-			res.json(record);
-		})
-		.catch(err => {
-			console.log('Error on check category name: ', err);
-			res.status(400).send('Failed to perform operation');
-		});
+            return Promise.all(saves);
+        })
+        .then(() => {
+            return Category.findOneAndDelete({_id: req.params.id});
+        })
+        .then(record => {
+            res.json(record);
+        })
+        .catch(err => {
+            console.log('Error on check category name: ', err);
+            res.status(400).send('Failed to perform operation');
+        });
 });
 
 // Update
 router.route('/categories/update/:id').put((req, res) => {
     const name = req.body.name.trim();
-	// Exclude updatable record from search - this allows to change case
+    // Exclude updatable record from search - this allows to change case
     Category.find({
         name: new RegExp('^' + name + '$', 'i'),
-		_id: {$ne: req.params.id}
+        _id: {$ne: req.params.id}
     })
     .then(items => {
         if (items.length) {
